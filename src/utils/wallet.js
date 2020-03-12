@@ -208,21 +208,28 @@ class Wallet {
     }
 
     async createNewAccount(accountId, fundingKey, fundingContract) {
-        this.checkNewAccount(accountId);
-        const keyPair = nearlib.KeyPair.fromRandom('ed25519');
+        this.checkNewAccount(accountId)
+        const keyPair = nearlib.KeyPair.fromRandom('ed25519')
 
-        if (fundingKey && fundingContract) {
-            await this.createNewAccountLinkdrop(accountId, fundingKey, fundingContract, keyPair);
-            await this.keyStore.removeKey(NETWORK_ID, fundingContract)
-
-        } else {
-            await sendJson('POST', CONTRACT_CREATE_ACCOUNT_URL, {
-                newAccountId: accountId,
-                newAccountPublicKey: keyPair.publicKey.toString()
-            })
+        try {
+            if (fundingKey && fundingContract) {
+                await this.createNewAccountLinkdrop(accountId, fundingKey, fundingContract, keyPair)
+                await this.keyStore.removeKey(NETWORK_ID, fundingContract)
+            } else {
+                await sendJson('POST', CONTRACT_CREATE_ACCOUNT_URL, {
+                    newAccountId: accountId,
+                    newAccountPublicKey: keyPair.publicKey.toString()
+                })
+            }
+            await this.saveAndSelectAccount(accountId, keyPair);
+        } catch(e) {
+            if (e.toString().indexOf('send_tx_commit has timed out') !== -1 || e instanceof TypeError) {
+                await this.saveAndSelectAccount(accountId, keyPair)
+            }
+            else {
+                throw e
+            }
         }
-        await this.saveAndSelectAccount(accountId, keyPair);
-
     }
 
     async createNewAccountLinkdrop(accountId, fundingKey, fundingContract, keyPair) {
