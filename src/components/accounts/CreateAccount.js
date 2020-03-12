@@ -5,7 +5,7 @@ import { GoogleReCaptchaProvider, GoogleReCaptcha } from 'react-google-recaptcha
 import CreateAccountForm from './CreateAccountForm'
 import AccountFormSection from './AccountFormSection'
 import AccountFormContainer from './AccountFormContainer'
-import { checkNewAccount, createNewAccount, clear, refreshAccount, resetAccounts } from '../../actions/account'
+import { checkNewAccount, createNewAccount, clear, refreshAccount } from '../../actions/account'
 import { ACCOUNT_ID_SUFFIX } from '../../utils/wallet'
 
 class CreateAccount extends Component {
@@ -14,18 +14,6 @@ class CreateAccount extends Component {
         accountId: '',
         token: '',
         recaptchaFallback: false
-    }
-
-    componentDidMount = () => {
-        const { loginError, resetAccounts } = this.props;
-
-        if (loginError) {
-            console.error('Error loading account:', loginError)
-
-            if (loginError.indexOf('does not exist while viewing') !== -1) {
-                resetAccounts()
-            }
-        }
     }
 
     componentWillUnmount = () => {
@@ -72,15 +60,13 @@ class CreateAccount extends Component {
 
     render() {
         const { loader, accountId, recaptchaFallback } = this.state
-        const { requestStatus, formLoader, checkNewAccount, location, loginResetAccounts } = this.props
+        const { requestStatus, formLoader, checkNewAccount, location } = this.props
         const useRequestStatus = accountId.length > 0 ? requestStatus : undefined;
 
         return (
             <AccountFormContainer 
-                location={this.props.location}
                 title={<Translate id='createAccount.pageTitle' />}
                 text={<Translate id='createAccount.pageText' />}
-                loginResetAccounts={loginResetAccounts}
             >
                 <AccountFormSection 
                     requestStatus={useRequestStatus}
@@ -110,8 +96,7 @@ const mapDispatchToProps = {
     checkNewAccount,
     createNewAccount,
     clear,
-    refreshAccount,
-    resetAccounts
+    refreshAccount
 }
 
 const mapStateToProps = ({ account }) => ({

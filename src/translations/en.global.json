@@ -10,7 +10,8 @@
         },
         "create": {
             "success": "Congrats! ${accountId} is available.",
-            "error": "Username is taken. Try something else."
+            "error": "Username is taken. Try something else.",
+            "errorAccountNotExist": "You have been redirected to this page because we had to reset the developer accounts. Please create a new account. We apologize for the inconveience."
         },
         "available": {
             "success": "User found.",

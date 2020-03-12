@@ -2,17 +2,16 @@ import { handleActions, combineActions } from 'redux-actions'
 import reduceReducers from 'reduce-reducers'
 
 import {
-    requestCode,
-    getAccessKeys,
-    getTransactions,
-    clear,
-    clearCode,
-    addAccessKey,
-    addAccessKeySeedPhrase,
-    clearAlert,
-    refreshUrl,
-    refreshAccount,
-    resetAccounts
+   requestCode,
+   getAccessKeys,
+   getTransactions,
+   clear,
+   clearCode,
+   addAccessKey,
+   addAccessKeySeedPhrase,
+   clearAlert,
+   refreshUrl,
+   refreshAccount
 } from '../../actions/account'
 
 const initialState = {
@@ -103,7 +102,7 @@ const url = handleActions({
 }, initialState)
 
 const account = handleActions({
-    [refreshAccount]: (state, { error, payload, ready, meta }) => {
+    [refreshAccount]: (state, { payload, ready, meta }) => {
         if (!ready) {
             return {
                 ...state,
@@ -111,30 +110,22 @@ const account = handleActions({
             }
         }
 
-        if (error) {
-            return {
-                ...state,
-                loader: false,
-                loginError: payload.message
-            }
+        const resetAccountState = {
+            loginResetAccount: payload.loginResetAccount,
+            globalAlertPreventClear: payload.globalAlertPreventClear,
+            globalAlert: payload.loginResetAccount ? {
+                success: false,
+                messageCode: 'account.create.errorAccountNotExist'
+            } : state.globalAlert
         }
-
+        
         return {
             ...state,
-            accountId: payload.accountId,
-            amount: payload.amount,
-            stake: payload.stake,
-            nonce: payload.nonce,
-            code_hash: payload.code_hash,
-            accounts: payload.accounts,
-            loader: false,
-            loginResetAccounts: undefined
+            ...payload,
+            ...resetAccountState,
+            loader: false
         }
-    },
-    [resetAccounts]: (state) => ({
-        ...state,
-        loginResetAccounts: true
-    }),
+    }
 }, initialState)
 
 export default reduceReducers(
