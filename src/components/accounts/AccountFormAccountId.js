@@ -45,6 +45,13 @@ class AccountFormAccountId extends Component {
         accountId: this.props.defaultAccountId || ''
     }
 
+    componentDidMount = () => {
+        const { defaultAccountId, checkAvailability } = this.props
+        if (defaultAccountId) {
+            checkAvailability(defaultAccountId)
+        }
+    }
+
     handleChangeAccountId = (e, { name, value }) => {
         const { pattern, handleChange, checkAvailability, type } = this.props
 
