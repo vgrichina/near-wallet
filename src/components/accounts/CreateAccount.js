@@ -11,7 +11,7 @@ import { ACCOUNT_ID_SUFFIX } from '../../utils/wallet'
 class CreateAccount extends Component {
     state = {
         loader: false,
-        accountId: this.props.loginResetAccountNotConfirmed || '',
+        accountId: (this.props.resetAccount && this.props.resetAccount.accountIdNotConfirmed) || '',
         token: '',
         recaptchaFallback: false
     }
@@ -60,7 +60,7 @@ class CreateAccount extends Component {
 
     render() {
         const { loader, accountId, recaptchaFallback } = this.state
-        const { requestStatus, formLoader, checkNewAccount, location, loginResetAccountNotConfirmed } = this.props
+        const { requestStatus, formLoader, checkNewAccount, location, resetAccount } = this.props
         const useRequestStatus = accountId.length > 0 ? requestStatus : undefined;
 
         return (
@@ -82,7 +82,7 @@ class CreateAccount extends Component {
                         verifyRecaptcha={token => this.setState({ token: token }, this.handleCreateAccount)}
                         checkAvailability={checkNewAccount}
                         accountId={accountId}
-                        defaultAccountId={loginResetAccountNotConfirmed}
+                        defaultAccountId={resetAccount && resetAccount.accountIdNotConfirmed}
                     />
                     <GoogleReCaptchaProvider reCaptchaKey="6LfSgNoUAAAAABKb2sk4Rs3TS0RMx9zrVwyTBSc6">
                         <GoogleReCaptcha onVerify={token => this.setState({ token: token })}/>
