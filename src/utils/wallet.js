@@ -24,6 +24,7 @@ const KEY_UNIQUE_PREFIX = '_4:'
 const KEY_WALLET_ACCOUNTS = KEY_UNIQUE_PREFIX + 'wallet:accounts_v2'
 const KEY_ACTIVE_ACCOUNT_ID = KEY_UNIQUE_PREFIX + 'wallet:active_account_id_v2'
 const ACCESS_KEY_FUNDING_AMOUNT = process.env.REACT_APP_ACCESS_KEY_FUNDING_AMOUNT || '100000000'
+export const keyAccountConfirmed = (accountId) => `wallet.account:${accountId}:${NETWORK_ID}:confirmed`
 
 const ACCOUNT_ID_REGEX = /^(([a-z\d]+[-_])*[a-z\d]+[.@])*([a-z\d]+[-_])*[a-z\d]+$/
 export const ACCOUNT_CHECK_TIMEOUT = 500
@@ -124,18 +125,18 @@ class Wallet {
     async refreshAccount() {
         try {
             const account = await this.loadAccount()
-            setAccountConfirmed(this.accountId, NETWORK_ID, true)
+            setAccountConfirmed(this.accountId, true)
             return account
         } catch (error) {
             console.error('Error loading account:', error)
 
             if (error.toString().indexOf('does not exist while viewing') !== -1) {
                 const accountId = this.accountId
-                const accountIdNotConfirmed = !getAccountConfirmed(accountId, NETWORK_ID)
+                const accountIdNotConfirmed = !getAccountConfirmed(accountId)
                 
                 this.clearAccountState()
                 const nextAccountId = Object.keys(this.accounts).find((account) => (
-                    getAccountConfirmed(account, NETWORK_ID)
+                    getAccountConfirmed(account)
                 )) || Object.keys(this.accounts)[0]
                 this.selectAccount(nextAccountId)
 
@@ -266,7 +267,7 @@ class Wallet {
         await this.keyStore.setKey(NETWORK_ID, accountId, keyPair)
         this.accounts[accountId] = true
         this.accountId = accountId
-        setAccountConfirmed(this.accountId, NETWORK_ID, false)
+        setAccountConfirmed(this.accountId, false)
         this.save()
     }
 
@@ -295,7 +296,7 @@ class Wallet {
 
     clearAccountState() {
         delete this.accounts[this.accountId]
-        removeAccountConfirmed(this.accountId, NETWORK_ID)
+        removeAccountConfirmed(this.accountId)
         this.accountId = ''
         this.save()
     }
