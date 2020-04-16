@@ -82,7 +82,7 @@ class CreateAccount extends Component {
                         verifyRecaptcha={token => this.setState({ token: token }, this.handleCreateAccount)}
                         checkAvailability={checkNewAccount}
                         accountId={accountId}
-                        defaultAccountId={resetAccount && resetAccount.accountIdNotConfirmed}
+                        defaultAccountId={resetAccount && resetAccount.accountIdNotConfirmed.split('.')[0]}
                     />
                     <GoogleReCaptchaProvider reCaptchaKey="6LfSgNoUAAAAABKb2sk4Rs3TS0RMx9zrVwyTBSc6">
                         <GoogleReCaptcha onVerify={token => this.setState({ token: token })}/>
